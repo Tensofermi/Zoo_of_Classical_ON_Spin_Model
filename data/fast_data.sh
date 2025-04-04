@@ -1,4 +1,6 @@
 #### easy to process data.
+mkdir -p cmp
+mkdir -p raw
 
 cd script
 

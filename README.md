@@ -1,46 +1,88 @@
-# Zoo of Classical O(N) Spin Model
+# Zoo of Classical O(N) Spin Models
 
-This Monte Carlo simulation program computes the partition function:
-$$\mathcal{Z} = \sum_{\{S_i\}} e^{-\beta H}$$
-for a **d-dimensional O(N) spin model**, where $d = 1, 2, 3, \ldots$ and $N = 1, 2, 3, \ldots$. The Hamiltonian is given by:
-$$ \beta H = -\beta J \sum_{\langle ij \rangle} \mathbf{S}_i \cdot \mathbf{S}_j - \beta \mathbf{h} \cdot \sum_i \mathbf{S}_i, $$
+This Monte Carlo simulation program evaluates the partition function $\mathcal{Z}$:
+
+<div align="center">
+  <img src="doc/fig/eq1.svg">
+</div>
+
+for a *d*-dimensional O(*N*) spin model, where $d = 1, 2, 3, \ldots$ denotes the spatial dimension and $N = 1, 2, 3, \ldots$ denotes the spin dimension. $\{\mathbf{S}_i\}$ represents the summation over all possible spin configurations, and $\beta$ is the inverse temperature, defined as $1/T$. Moreover, the Hamiltonian $H$ is given by:
+
+<div align="center">
+  <img src="doc/fig/eq2.svg">
+</div>
+
 with $J = 1$ (ferromagnetic coupling), leaving $\beta$ (inverse temperature) and $\mathbf{h}$ (external field) as tunable parameters.
 
-The **Swendsen-Wang cluster algorithm** is employed for efficient configuration updates, particularly effective near critical points.
+The Swendsen–Wang and Wolff algorithms are employed for efficient configuration updates, particularly near critical points. A Metropolis version is also included.
 
 ## How to use
-<!-- 1. Clone the repository:
+1. Clone the repository:
    ```bash
-   git clone https://github.com/username/O(N)-spin-model.git
-   cd O(N)-spin-model
+   git clone https://github.com/Tensofermi/Zoo_of_Classical_ON_Spin_Model
+   cd Zoo_of_Classical_ON_Spin_Model
    ```
-2. 1 -->
+
+2. The file named `input.txt` contains all tunable parameters, so you can modify them as needed. Its basic structure is as follows:
+   ```
+   //----- Model_Parameters
+   N           1                         
+   D           2                                            
+   beta        0.44         
+   L           16      
+   h           1                    
+
+   //----- Simulation_Parameters
+   Seed        987654321           
+   N_Measure   1                                          
+   N_Each      1000    
+   N_Therm     10                                          
+   N_Total     200                                          
+   NBlock      1000                                 
+   MaxNBin     1000000                                
+   NperBin     1                     
+   ```
+
+3. Once you've determined which parameters you want to use, you can run the program simply by executing:
+   ```
+   ./run.sh
+   ```
+   To clear the generated data, use:
+   ```
+   ./clear.sh
+   ```
+   To clear everything including compiled files, use:
+   ```
+   ./clear_all.sh
+   ```
+
+4. For more advanced simulations:
+   - Use `\lsub` to run local simulations on your PC.
+   - Use `\qsub` to submit jobs to a server using the PBS system.
+   - The output data will be stored in the `\data` directory.
+   - You can then visualize the results using the `\plot` script.
 
 
 ## Features
-- Simulate O(N) spin models in arbitrary dimensions $d$ and spin components $N$.
-- Swendsen-Wang algorithm for reduced critical slowing-down.
-- Parallel computing support (OpenMP or MPI).
-- Measure observables: energy, magnetization, susceptibility, correlation length.
-- Output thermodynamic quantities and critical exponents.
-- Phase diagram plotting tools.
+- Simulates O(N) spin models in arbitrary spatial dimensions *d* and spin components *N*.
+- Employs cluster algorithms to reduce critical slowing down.
+- Measures various observables: energy-like, magnetic-like, correlation length, and cluster-related quantities.
 
 ## Phase Transitions and Universality Classes
-Below is a summary of notable properties for specific $d$ and $N$:
+Below is a summary of notable properties for specific values of $d$ and $N$:
 
-| $d$ | $N$ | Phase Transition? | Type          | Universality Class      | Lower Critical Dimension | Notable Model      |
-|---------|---------|--------------------|---------------|-------------------------|--------------------------|--------------------|
-| 1       | Any     | No (except $T=0$) | —             | —                       | 1                        | —                  |
-| 2       | 1       | Yes                | Continuous    | 2D Ising                | 1                        | Ising              |
-| 2       | 2       | Yes                | BKT Transition| Kosterlitz-Thouless      | 2                        | XY                 |
-| 2       | ≥3      | No                 | —             | —                       | 2                        | —                  |
-| 3       | 1       | Yes                | Continuous    | 3D Ising                | 1                        | Ising              |
-| 3       | 2       | Yes                | Continuous    | 3D XY                   | 2                        | XY                 |
-| 3       | 3       | Yes                | Continuous    | 3D Heisenberg           | 2                        | Heisenberg         |
-| ≥4      | Any     | Yes                | Continuous    | Mean-field              | $d_c = 4$            | —                  |
+| $d$      | $N$     | Phase Transition?     | Type               | Universality Class         | Notable Model       |
+|----------|---------|------------------------|--------------------|----------------------------|---------------------|
+| 1        | Any     | No                     | —                  | —                          | —                   |
+| 2        | 1       | Yes                    | Continuous         | 2D Ising                   | Ising               |
+| 2        | 2       | Yes                    | BKT transition     | Kosterlitz–Thouless        | XY                  |
+| 2        | ≥3      | No                     | —                  | —                          | —                   |
+| 3        | 1       | Yes                    | Continuous         | 3D Ising                   | Ising               |
+| 3        | 2       | Yes                    | Continuous         | 3D XY                      | XY                  |
+| 3        | 3       | Yes                    | Continuous         | 3D Heisenberg              | Heisenberg          |
+| ≥4       | Any     | Yes                    | Continuous         | Mean-field                 | —                   |
 
 **Notes**:
-- **Lower critical dimension**: Dimension below which no finite-$T$ phase transition occurs.
-- **BKT transition**: Topological phase transition in 2D XY models ($N=2$).
-- **Mermin-Wagner theorem**: Prohibits spontaneous symmetry breaking for $N \geq 2$ in $d=2$.
+- **BKT transition**: A topological phase transition occurring in 2D XY models ($N = 2$).
+- **Mermin–Wagner theorem**: Prohibits spontaneous symmetry breaking for $N \geq 2$ in $d = 2$.
 

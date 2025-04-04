@@ -3,9 +3,9 @@ set termoption enhanced
 set terminal pdf size 5in, 3.5in  # 纸张的大小
 set size ratio 3.0/4.0
 
-col = 44 # Qm
-col = 48 # C12
-col = 50 # corr
+# col = 45 # Qm
+col = 49 # C12
+# col = 51 # corr
 set size ratio 3.0/4.0
 
 #######################################################
@@ -19,10 +19,10 @@ set key left
 
 # set xrange [0.21 : 0.24]
 
-plot  '../data/cmp/cmp_L_8.dat' using 3:(column(col)):(column(col + 1))  with errorline pt 6  lc 'purple'  t '8',\
-'../data/cmp/cmp_L_16.dat' using 3:(column(col)):(column(col + 1))  with errorline pt 6  lc 'green'  t '16',\
-'../data/cmp/cmp_L_20.dat' using 3:(column(col)):(column(col + 1))  with errorline pt 6  lc 'blue'  t '20',\
-'../data/cmp/cmp_L_32.dat' using 3:(column(col)):(column(col + 1))  with errorline pt 6  lc 'red'  t '32'
+plot  '../data/cmp/cmp_L_8_h_0.00000.dat' using 3:(column(col)):(column(col + 1))  with errorline pt 6  lc 'purple'  t '8',\
+'../data/cmp/cmp_L_12_h_0.00000.dat' using 3:(column(col)):(column(col + 1))  with errorline pt 6  lc 'green'  t '16',\
+'../data/cmp/cmp_L_16_h_0.00000.dat' using 3:(column(col)):(column(col + 1))  with errorline pt 6  lc 'blue'  t '20',\
+'../data/cmp/cmp_L_20_h_0.00000.dat' using 3:(column(col)):(column(col + 1))  with errorline pt 6  lc 'red'  t '32'
 
 # plot  '../data/cmp/cmp_L_8.dat' using 3:(column(col))  with errorline pt 6  lc 'purple'  t '8',\
 # '../data/cmp/cmp_L_16.dat' using 3:(column(col))  with errorline pt 6  lc 'green'  t '16',\

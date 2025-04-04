@@ -10,7 +10,7 @@ Seed        987654321
 N_Measure   1                                           
 N_Each      1000    
 N_Therm     10                                           
-N_Total     2000                                           
+N_Total     200                                           
 NBlock      1000                                  
 MaxNBin     1000000                                
 NperBin     1                     

@@ -8,9 +8,9 @@ N = [3]
 D = [3]
 
 Kc = 0.693003
-beta = [Kc - 0.1, Kc - 0.04, Kc - 0.02, Kc, Kc + 0.02, Kc + 0.04, Kc + 0.1]
+beta = [Kc - 0.04, Kc - 0.02, Kc, Kc + 0.02, Kc + 0.04]
 
-L = [8, 16, 20, 32]
+L = [8, 12, 16, 20]
 
 h = [0]
 #=== Simulation_Parameters
