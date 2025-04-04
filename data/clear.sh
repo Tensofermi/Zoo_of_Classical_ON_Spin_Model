@@ -1,2 +1,1 @@
-rm -f cmp/*
-rm -f raw/*
+rm -rf raw/* && rm -rf cmp/*

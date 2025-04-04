@@ -1,7 +1,10 @@
 import header_footer as hf
-import os
 import glob
+import time
+from concurrent.futures import ThreadPoolExecutor
 
+start_time = time.time()
+##################################################################################
 # Define the paths and files
 MODE = hf.mode
 TARGET_FILE = hf.formated_file
@@ -31,3 +34,8 @@ for file in files:
         # For subsequent files, skip the header lines
         with open(OUTPUT_FILE, 'a') as f:
             f.writelines(contents[2:])
+        
+##################################################################################
+end_time = time.time()
+execution_time = end_time - start_time
+print(f"Time for collecting  data: {execution_time:.4f} seconds")

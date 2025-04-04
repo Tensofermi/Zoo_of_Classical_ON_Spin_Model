@@ -1,6 +1,8 @@
 *.dat
 *.pdf
 *.out
+/bin/*
+/build/*
 /lsub/jobs/*/
 /qsub/jobs/*/
 .vscode/

@@ -14,7 +14,7 @@ struct Parameter
 
     // Model Parameters
     int Nspin, D, L;
-    double beta;
+    double beta, h;
 
     // Observable label
     int i_M, i_absM, i_M2, i_M4, i_E, i_E2;
@@ -24,5 +24,10 @@ struct Parameter
     int i_M2_E, i_Mk2_E, i_K, i_Kk;
 
     // Distribution label
+    int his_c1, his_ns;
+
+    // Function
+    std::vector<double> Corr_Fun;
+    double corr_num;
 
 };

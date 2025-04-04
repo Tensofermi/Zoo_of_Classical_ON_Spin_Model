@@ -25,12 +25,12 @@ def write_terms(f_w, para_name, para_val):
 
 
 ########################################################################################
-JOB_NAME = 'LRON'
+JOB_NAME = 'ON'
 ROOT_DIR = 'jobs'
-compiler_op = 'g++ -std=c++11 -O2'     # g++, icpc, clang++, ifort, gfortran, python3 ...
+# compiler_op = 'g++ -std=c++11 -O2'     # g++, icpc, clang++, ifort, gfortran, python3 ...
 ########################################################################################
 # Input File
-arrays = [p.N, p.D, p.beta, p.L]
+arrays = [p.N, p.D, p.beta, p.L, p.h]
 arrays.extend([p.Seed, p.N_Measure, p.N_Each, p.N_Therm, p.N_Total, p.NBlock, p.MaxNBin, p.NperBin])
 ########################################################################################
 
@@ -43,7 +43,8 @@ print('jobs are in ' + main_folder)
 combinations = list(product(*arrays))
 
 # compile code
-os.system("cd ../bin && " + compiler_op + " ../src/" + "main.cpp")
+# os.system("cd ../bin && " + compiler_op + " ../src/" + "main.cpp")
+os.system("cd .. && make -j32")
 bin_dir = os.getcwd() + '/../bin/a.out'     # binary file address
 
 # create work files
@@ -60,9 +61,10 @@ for combo in combinations:
     _D = combo[1]
     _beta = combo[2]
     _L = combo[3]
+    _h = combo[4]
     _seed = combo[-8]
 ########################################################################################
-    job_name = "N_" + str(_N) +"_D_" + str(_D) + "_beta_" + str(_beta) + "_L_" + str(_L) + "_seed_" + str(_seed)
+    job_name = "N_" + str(_N) +"_D_" + str(_D) + "_beta_" + str(_beta) + "_L_" + str(_L) + "_h_" + str(_h) + "_seed_" + str(_seed)
 
     os.system("mkdir " + job_name)                    # create each job file
     os.system("touch ./" + job_name + "/input.txt")   # create input file for each job
@@ -73,6 +75,7 @@ for combo in combinations:
     write_terms(f_w, "D",           combo[1])
     write_terms(f_w, "beta",        combo[2])
     write_terms(f_w, "L",           combo[3])
+    write_terms(f_w, "h",           combo[4])
     f_w.write(""+"\n")    
     f_w.write("//----- Simulation_Parameters" + "\n")
     write_terms(f_w, "Seed",        combo[-8])

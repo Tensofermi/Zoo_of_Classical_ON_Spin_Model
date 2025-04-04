@@ -1,0 +1,16 @@
+//----- Model_Parameters
+N           1                         
+D           2                                            
+beta        0.44         
+L           16      
+h           1                    
+
+//----- Simulation_Parameters
+Seed        987654321           
+N_Measure   1                                           
+N_Each      1000    
+N_Therm     10                                           
+N_Total     2000                                           
+NBlock      1000                                  
+MaxNBin     1000000                                
+NperBin     1                     

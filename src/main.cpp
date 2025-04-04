@@ -21,12 +21,15 @@ int main()
     //--------------------------------------------------------//
     RandomNumGen rn(para.Seed);
     Observable obs(ck, io, para);
-    Distribution dis(ck, io, para);
-    Configuration cnf(ck, io, rn, para, obs, dis);
+    Histogram his(ck, io, para);
+    Configuration cnf(ck, io, rn, para, obs, his);
 
     unsigned long iter, ieach;
 
-    /* >> THERMALIZATION << */
+    io.exportInfo(io.OuputInfo, cnf.infoConfig());
+    //--------------------------------------------------------//
+    //-------------------- Thermalization --------------------//
+    //--------------------------------------------------------//
     io.exportInfo(io.OuputInfo, ck.exportNow() + "\tThermalizing...\n");
 
     obs.reset();
@@ -53,8 +56,10 @@ int main()
 
 		iter++;
 	}
-    
-    /* >> SIMULATION << */ 
+
+    //--------------------------------------------------------//
+    //---------------------- Simulation ----------------------//
+    //--------------------------------------------------------//
     io.exportInfo(io.OuputInfo, ck.exportNow() + "\tSimulating...\n");
 
     obs.reset();
@@ -79,8 +84,8 @@ int main()
         // Observable Output
         io.exportInfo(io.OuputCont, obs.printOutput(true));
         
-        // Distribution Output
-        dis.saveDistr();
+        // Histogram Output
+        his.saveDistr();
 
         // Current Configuration Output
         cnf.printConfig(iter);
@@ -89,6 +94,6 @@ int main()
 	}
 
     //--------------------------------------------------------//
-    //--------------------------------------------------------//
+    //------------------------- End --------------------------//
     //--------------------------------------------------------//
 }

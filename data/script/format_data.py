@@ -9,6 +9,14 @@ def format_data(r_name, w_name, wid, bas_wid):
     context_2 = "#"         # obs name list
     context_3 = " "         # obs value list
 
+    # test file
+    with open(r_name,'r') as test:
+        check = test.read()
+        if '======' in check:
+            pass
+        else:
+            return
+
     # load data
     with open(r_name,'r') as rf:
         # get first block

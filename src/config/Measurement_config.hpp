@@ -5,26 +5,27 @@
 // ------------------------------------------------------------------------
 void Configuration::measure()
 {
-//--- Spin Observables
-	
-	for (unsigned int i = 0; i < Nspin; i++) 
+//--- Energy and Magnetization 
+	for (int i = 0; i < Nspin; i++) 
 		tempSpin[i] = 0;
 	
 	obs.Ob[para.i_E] = 0;
-	for (unsigned int i = 0; i < Vol; i++)
+	for (int i = 0; i < Vol; i++)
 	{
 		tempSpin = tempSpin + Site[i];
-		for (unsigned int j = 0; j < NNb / 2; j++)	// avoid double counting
+
+		for (int j = 0; j < NNb / 2; j++)	// avoid double counting
 		{
 			obs.Ob[para.i_E] += Site[i] * Site[Latt.getNNSite(i,j)];
 		}
 	}
+	obs.Ob[para.i_E] = - obs.Ob[para.i_E] - h * tempSpin[0];
+	obs.Ob[para.i_E2] = obs.Ob[para.i_E] * obs.Ob[para.i_E];
+
 	obs.Ob[para.i_M] = abs(tempSpin);
 	obs.Ob[para.i_absM] = obs.Ob[para.i_M];
 	obs.Ob[para.i_M2] = obs.Ob[para.i_M] * obs.Ob[para.i_M];
 	obs.Ob[para.i_M4] = obs.Ob[para.i_M2] * obs.Ob[para.i_M2];
-	obs.Ob[para.i_E] = -obs.Ob[para.i_E];	// add minus
-	obs.Ob[para.i_E2] = obs.Ob[para.i_E] * obs.Ob[para.i_E];
 
 //--- Cluster Observables
 	obs.Ob[para.i_NCluster] = NCluster;
@@ -33,6 +34,8 @@ void Configuration::measure()
 	obs.Ob[para.i_SM4] = 3 * S2 * S2 - 2 * S4;
 	obs.Ob[para.i_C1] = C1;
 	obs.Ob[para.i_C2] = C2;
+
+	// his.obsAdd(para.his_c1, C1);
 
 //--- k-space Observables
 	std::vector<double> mk_c, mk_s;
@@ -59,4 +62,26 @@ void Configuration::measure()
 
 	obs.Ob[para.i_M2_E] = obs.Ob[para.i_M2] * obs.Ob[para.i_E];
 	obs.Ob[para.i_Mk2_E] = obs.Ob[para.i_Mk2] * obs.Ob[para.i_E];
+
+
+//--- Correlation Function
+    // int site_j;
+	// int n_corr_sample = 250;
+	// int n_dx = int(L / 2.0);
+
+    // for (int n = 0; n < n_corr_sample; n++)
+    // {
+    //     int site_i = rn.getRandomNum(Vol);
+
+    //     for (int dx = 0; dx < n_dx; dx++)
+    //     {
+	// 		for (int dir = 0; dir < NNb; dir++)
+	// 		{
+	// 			site_j = Latt.getDirSite(site_i, dir, dx);
+	// 			para.Corr_Fun[dx] += Site[site_i] * Site[site_j];
+	// 		}
+    //     }
+    // }
+	// para.corr_num += NNb * n_corr_sample;
+
 }

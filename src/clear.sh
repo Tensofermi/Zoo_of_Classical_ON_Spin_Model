@@ -1,1 +1,0 @@
-rm -f ouput.txt ouput.info a.out a.exe *.dis config_*.txt plane_*.txt

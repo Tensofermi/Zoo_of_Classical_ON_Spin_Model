@@ -6,6 +6,7 @@ void Inputor::initInputor()
     addInputor(para.Nspin         ,   "N"               , 		    1                 );
     addInputor(para.D             ,   "D"               , 		    2                 );
     addInputor(para.beta          ,   "beta"            , 		    0.4               );
+    addInputor(para.h             ,   "h"               , 		    0                 );
     addInputor(para.L             ,   "L"               , 		    8                 );
-
+    
 }

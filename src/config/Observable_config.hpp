@@ -1,5 +1,6 @@
 #pragma once
 
+
 void Observable::initObservable()  // add addBasicObser() & addCombiObser()
 {
 	int Vol = pow(para.L, para.D);
@@ -35,8 +36,6 @@ void Observable::initObservable()  // add addBasicObser() & addCombiObser()
 	addCombiObser(para.i_K 		     , "K"        		, "M^2 covariance"    			            , 0     , -1.0		      				);
 	addCombiObser(para.i_Kk 	     , "K_k"        	, "M_k^2 covariance"    			        , 0     , -1.0		      				);
 
-	
-
 }
 
 void Observable::calCombiObser()  // add Result[]
@@ -52,6 +51,7 @@ void Observable::calCombiObser()  // add Result[]
 	Result[para.i_Kk] = Ob[para.i_Mk2_E] / Ob[para.i_Mk2] - Ob[para.i_E];
 }
 
+
 // ---------------------------------------------
 // This function prints the Monte Carlo results.
 // ---------------------------------------------
@@ -62,13 +62,15 @@ std::string Observable::printOutput(bool Flag)
 
 	str += "==============================================================================\n";
 	str += l_jf("N = " + toStr(para.Nspin), 22) + l_jf("D = " + toStr(para.D), 22) + "\n";
-	str += l_jf("beta = " + toStr(para.beta), 22) + l_jf("L = " + toStr(para.L), 22) + "\n";
+	str += l_jf("beta = " + toStr(para.beta), 22) + l_jf("h = " + toStr(para.h), 22) + l_jf("L = " + toStr(para.L), 22) + "\n";
 	str += l_jf("N_Therm = " + toStr(para.N_Therm), 22) + l_jf("N_Total = " + toStr(para.N_Total), 22) + l_jf("Seed = " + toStr(para.Seed), 22) + "\n";
 	str += l_jf("N_Measure = " + toStr(para.N_Measure), 22) + l_jf("N_Each = " + toStr(para.N_Each), 22) + l_jf("NBlock = " + toStr(para.NBlock), 22) + "\n";
 	str += "==============================================================================\n";
 
 	if(Flag)
 	{
+		double time_ratio = MCStep / (double)para.N_Each / (double)para.N_Total;
+
 		if(NBin >= NBlock)
 		{
 			ZZ = (NBin / NBlock) * NBlock * NperBin;
@@ -79,7 +81,7 @@ std::string Observable::printOutput(bool Flag)
 			//--------------------------------------------------//
 			//------------ obtain average and error ------------//
 			//--------------------------------------------------//
-			str += "Average: ZZ = " + toStr(ZZ0) + " , MCStep = " + toStr(MCStep0) + " , Status = " + dou2str(100.0 * MCStep / (double)para.N_Each / (double)para.N_Total, 2) + "%" + "\n";
+			str += "Average: ZZ = " + toStr(ZZ0) + " , MCStep = " + toStr(MCStep0) + " , Status = " + dou2str(100.0 * time_ratio, 2) + "%" + "\n";
 			str += printAverage();
 		}
 		else
@@ -87,12 +89,39 @@ std::string Observable::printOutput(bool Flag)
 			str += "    The samples are too few!!!\n";
 		}
 		str += "Simulation Time: " + ck.tick() + " , Total: " + ck.exportTime() + " , " + ck.exportNow() + "\n";
+
+		//---------------------------------------------------------------
+		//------------------ Estimate Time ------------------------------
+		//---------------------------------------------------------------
+		str += "==============================================================================\n";
+		double total_time_estimate = fromStr<double>(ck.exportTime_sec()) / time_ratio;
+		double remaining_time_estimate = total_time_estimate - fromStr<double>(ck.exportTime_sec());
+		
+		str += "Estimated Total Time     = " + ck.formTime(total_time_estimate) + " \t= " + dou2str(total_time_estimate, 2) + " s\n";
+		str += "Estimated Remaining Time = " + ck.formTime(remaining_time_estimate) + " \t= " + dou2str(remaining_time_estimate, 2) + " s\n";
+		//---------------------------------------------------------------
+		//------------------ Estimate Time ------------------------------
+		//---------------------------------------------------------------
 	}
 	else
-	{
-		str += "Current: ZZ0 = " + toStr(ZZ0) + " , MCStep0 = " + toStr(MCStep0) + " , Status = " + dou2str(100.0 * MCStep / (double)para.N_Each / (double)para.N_Therm, 2) + "%" + "\n";
+	{	
+		double time_ratio = MCStep / (double)para.N_Each / (double)para.N_Therm;
+		str += "Current: ZZ0 = " + toStr(ZZ0) + " , MCStep0 = " + toStr(MCStep0) + " , Status = " + dou2str(100.0 * time_ratio, 2) + "%" + "\n";
 		str += printCurrent();
 		str += "Therm Time: " + ck.tick() + " , Total: " + ck.exportTime() + " , " + ck.exportNow() + "\n";
+		
+		//---------------------------------------------------------------
+		//------------------ Estimate Time ------------------------------
+		//---------------------------------------------------------------
+		str += "==============================================================================\n";
+		double total_time_estimate = fromStr<double>(ck.exportTime_sec()) / time_ratio;
+		double remaining_time_estimate = total_time_estimate - fromStr<double>(ck.exportTime_sec());
+		
+		str += "Estimated Thermalizing Time  = " + ck.formTime(total_time_estimate) + "\t= " + dou2str(total_time_estimate, 2) + " s\n";
+		str += "Estimated Remaining Time     = " + ck.formTime(remaining_time_estimate) + "\t= " + dou2str(remaining_time_estimate, 2) + " s\n";
+		//---------------------------------------------------------------
+		//------------------ Estimate Time ------------------------------
+		//---------------------------------------------------------------
 	}
 	
 	str += "==============================================================================\n";

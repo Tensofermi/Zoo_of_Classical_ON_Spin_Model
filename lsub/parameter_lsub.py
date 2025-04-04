@@ -12,6 +12,7 @@ beta = [Kc - 0.1, Kc - 0.04, Kc - 0.02, Kc, Kc + 0.02, Kc + 0.04, Kc + 0.1]
 
 L = [8, 16, 20, 32]
 
+h = [0]
 #=== Simulation_Parameters
 Seed = [12345]
 

@@ -3,13 +3,16 @@ import numpy as np
 
 
 #=== Model_Parameters
-N = [1]
+N = [3]
 
-D = [2]
+D = [3]
 
-beta = [0.42, 0.43, 0.44, 0.45, 0.46]
+Kc = 0.693003
+beta = [Kc - 0.1, Kc - 0.04, Kc - 0.02, Kc, Kc + 0.02, Kc + 0.04, Kc + 0.1]
 
-L = [8, 16, 32, 64, 128]
+L = [8, 16, 20, 32]
+
+h = [0]
 
 #=== Simulation_Parameters
 Seed = [12345]
@@ -29,4 +32,4 @@ MaxNBin = [1000000]
 NperBin = [1]
 
 #########################################
-job_time = "20:00:00:00"       # wall time
+job_time = "30:00:00:00"       # wall time
