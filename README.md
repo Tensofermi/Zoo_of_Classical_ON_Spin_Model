@@ -71,16 +71,16 @@ The Swendsen–Wang and Wolff algorithms are employed for efficient configuratio
 ## Phase Transitions and Universality Classes
 Below is a summary of notable properties for specific values of $d$ and $N$:
 
-| $d$      | $N$     | Phase Transition?     | Type               | Universality Class         | Notable Model       |
-|----------|---------|------------------------|--------------------|----------------------------|---------------------|
-| 1        | Any     | No                     | —                  | —                          | —                   |
-| 2        | 1       | Yes                    | Continuous         | 2D Ising                   | Ising               |
-| 2        | 2       | Yes                    | BKT transition     | Kosterlitz–Thouless        | XY                  |
-| 2        | ≥3      | No                     | —                  | —                          | —                   |
-| 3        | 1       | Yes                    | Continuous         | 3D Ising                   | Ising               |
-| 3        | 2       | Yes                    | Continuous         | 3D XY                      | XY                  |
-| 3        | 3       | Yes                    | Continuous         | 3D Heisenberg              | Heisenberg          |
-| ≥4       | Any     | Yes                    | Continuous         | Mean-field                 | —                   |
+| $d$      | $N$     | Phase Transition?      | Type               | Universality Class         |
+|----------|---------|------------------------|--------------------|----------------------------|
+| 1        | Any     | No                     | —                  | —                          |
+| 2        | 1       | Yes                    | Continuous         | 2D Ising                   |
+| 2        | 2       | Yes                    | BKT transition     | 2D XY                      |
+| 2        | ≥3      | No                     | —                  | —                          |
+| 3        | 1       | Yes                    | Continuous         | 3D Ising                   |
+| 3        | 2       | Yes                    | Continuous         | 3D XY                      |
+| 3        | 3       | Yes                    | Continuous         | 3D Heisenberg              |
+| ≥4       | Any     | Yes                    | Continuous         | Mean-field                 | 
 
 **Notes**:
 - **BKT transition**: A topological phase transition occurring in 2D XY models ($N = 2$).
