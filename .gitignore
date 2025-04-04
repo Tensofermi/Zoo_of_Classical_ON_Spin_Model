@@ -5,4 +5,5 @@
 /qsub/jobs/*/
 .vscode/
 __pycache__/
-fast.sh
+ouput.txt
+ouput.info
