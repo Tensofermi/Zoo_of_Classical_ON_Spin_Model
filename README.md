@@ -86,3 +86,10 @@ Below is a summary of notable properties for specific values of $d$ and $N$:
 - **BKT transition**: A topological phase transition occurring in 2D XY models ($N = 2$).
 - **Mermin–Wagner theorem**: Prohibits spontaneous symmetry breaking for $N \geq 2$ in $d = 2$.
 
+## Link
+
+[Bilayer XY](https://github.com/Tensofermi/Bilayer_XY_Model)
+
+[Loop-Ising](https://github.com/Tensofermi/HD_Ising_IrrWorm)
+
+[LR-O(n)](https://github.com/Tensofermi/LRON_SW)

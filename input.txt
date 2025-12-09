@@ -2,13 +2,13 @@
 N           1                         
 D           2                                            
 beta        0.44         
-L           16      
-h           1                    
+L           8192      
+h           0                    
 
 //----- Simulation_Parameters
 Seed        987654321           
 N_Measure   1                                           
-N_Each      1000    
+N_Each      10000    
 N_Therm     10                                           
 N_Total     200                                           
 NBlock      1000                                  

@@ -46,7 +46,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 .PHONY: clean
 clean:
-	$(RM) -rf $(BUILD_DIR)/* $(BIN_DIR)/$(TARGET) $(BUILD_DIR) $(BIN_DIR)  # 删除构建目录和可执行文件
+	$(RM) -rf $(BUILD_DIR)/* $(BIN_DIR)/$(TARGET) $(BUILD_DIR) $(BIN_DIR)
 
 
 -include $(DEP)
