@@ -88,8 +88,8 @@ Below is a summary of notable properties for specific values of $d$ and $N$:
 
 ## Link
 
-[Bilayer XY](https://github.com/Tensofermi/Bilayer_XY_Model)
+[Bilayer XY](https://github.com/Tensofermi/Bilayer_XY_Model): Two coupled 2D O(2) models, exhibiting a new emergent phase.
 
-[Loop-Ising](https://github.com/Tensofermi/HD_Ising_IrrWorm)
+[Loop-Ising](https://github.com/Tensofermi/HD_Ising_IrrWorm): High-dimensional O(1) model in the loop representation.
 
-[LR-O(n)](https://github.com/Tensofermi/LRON_SW)
+[LR-O(n)](https://github.com/Tensofermi/LRON_SW): O(n) model with a $1/r^{d+\sigma}$ long-range interaction.
