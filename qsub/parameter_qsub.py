@@ -17,6 +17,8 @@ h = [0]
 #=== Simulation_Parameters
 Seed = [12345]
 
+mem = 4
+
 N_Measure = [1]
 
 N_Each = [1000]
@@ -33,3 +35,4 @@ NperBin = [1]
 
 #########################################
 job_time = "30:00:00:00"       # wall time
+# job_time = "20-00:00:00"       # wall time for slurm
