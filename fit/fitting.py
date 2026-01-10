@@ -71,6 +71,28 @@ def calculate_chi2(result: lt.model.ModelResult, L: np.ndarray) -> str:
     out += f"sum:\t{total_chi2}\n"
     return out
 
+def calculate_chi2(result: lt.model.ModelResult, L: np.ndarray, K: np.ndarray) -> str:
+    """
+    计算chi^2贡献
+    
+    Args:
+        result: 拟合结果
+        L: 系统尺寸数组
+        K: 耦合常数数组
+        
+    Returns:
+        str: chi^2贡献报告
+    """
+    out = '\n[[contributions to chi^2]]\n'
+    total_chi2 = 0
+    
+    for i in range(len(result.data)):
+        chi2 = (result.data[i] - result.best_fit[i])**2 * result.weights[i]**2
+        total_chi2 += chi2
+        out += f"{i+1}({L[i]},{K[i]:.10f}):\t{chi2}\n"
+    
+    out += f"sum:\t{total_chi2}\n"
+    return out
 ######################################
 ##### Fitting Parameters #############
 ######################################
