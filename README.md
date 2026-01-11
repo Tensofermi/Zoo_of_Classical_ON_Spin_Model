@@ -93,3 +93,5 @@ Below is a summary of notable properties for specific values of $d$ and $N$:
 [Loop-Ising](https://github.com/Tensofermi/HD_Ising_IrrWorm): High-dimensional O(1) model in the loop representation.
 
 [LR-O(n)](https://github.com/Tensofermi/LRON_SW): O(n) model with a $1/r^{d+\sigma}$ long-range interaction.
+
+[LR-RW](https://github.com/Tensofermi/LR_RW): Lévy flights with a step-length distribution $P(r) \sim 1/r^{d+\sigma}$..
