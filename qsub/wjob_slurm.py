@@ -30,7 +30,7 @@ ROOT_DIR = 'jobs'
 # compiler_op = 'g++ -std=c++11 -O2'     # g++, icpc, clang++, ifort, gfortran, python3 ...
 ########################################################################################
 # Input File
-arrays = [p.N, p.D, p.beta, p.L]
+arrays = [p.N, p.D, p.beta, p.L, p.h]
 arrays.extend([p.Seed, p.N_Measure, p.N_Each, p.N_Therm, p.N_Total, p.NBlock, p.MaxNBin, p.NperBin])
 ########################################################################################
 
