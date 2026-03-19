@@ -94,4 +94,6 @@ Below is a summary of notable properties for specific values of $d$ and $N$:
 
 [LR-O(n)](https://github.com/Tensofermi/LRON_SW): O(n) model with a $1/r^{d+\sigma}$ long-range interaction.
 
-[LR-RW](https://github.com/Tensofermi/LR_RW): Lévy flights with a step-length distribution $P(r) \sim 1/r^{d+\sigma}$..
+[LR-RW](https://github.com/Tensofermi/LR_RW): Lévy flights with a step-length distribution $P(r) \sim 1/r^{d+\sigma}$.
+
+[LR-LERW](https://github.com/Tensofermi/LR-LERW): Loop-erased random walk with a step-length distribution $P(r) \sim 1/r^{d+\sigma}$.
