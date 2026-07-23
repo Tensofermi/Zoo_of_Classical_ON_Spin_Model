@@ -1,5 +1,5 @@
 #pragma once
-#include <bits/stdc++.h>
+#include "common.h"
 
 #include "Text_Formalization.hpp"
 #include "Vector_operation.hpp"

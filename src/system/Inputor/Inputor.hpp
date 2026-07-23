@@ -1,5 +1,5 @@
 #pragma once
-#include <bits/stdc++.h>
+#include "common.h"
 #include "../Utils/Utils.hpp"
 #include "../IOControl/IOControl.hpp"
 #include "../../config/Parameter_config.hpp"

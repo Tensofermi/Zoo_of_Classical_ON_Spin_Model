@@ -1,5 +1,5 @@
 #pragma once
-#include <bits/stdc++.h>
+#include "common.h"
 
 // Some useful tools
 #include "Utils/Utils.hpp"

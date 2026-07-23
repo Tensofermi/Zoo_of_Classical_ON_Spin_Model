@@ -1,5 +1,5 @@
 #pragma once
-#include <bits/stdc++.h>
+#include "common.h"
 
 // Transform T to string type
 template <class T>

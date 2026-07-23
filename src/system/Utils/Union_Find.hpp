@@ -1,5 +1,5 @@
 #pragma once
-#include <bits/stdc++.h>
+#include "common.h"
 
 // A class to represent a Union-Find data structure (also known as Disjoint Set Union)
 // that provides efficient methods for connecting elements, and determining whether

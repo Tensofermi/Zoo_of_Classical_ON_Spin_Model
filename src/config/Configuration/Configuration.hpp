@@ -1,5 +1,5 @@
 #pragma once
-#include <bits/stdc++.h>
+#include "common.h"
 #include "../../system/Header.hpp"
 #include "../Lattice/Lattice.hpp"
 

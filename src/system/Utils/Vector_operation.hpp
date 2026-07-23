@@ -1,5 +1,5 @@
 #pragma once
-#include <bits/stdc++.h>
+#include "common.h"
 
 //--- Vector Operation
 inline double dot(const std::vector<double>& vector1, const std::vector<double>& vector2) 
