@@ -1,140 +1,233 @@
-import os
+#!/usr/bin/env python3
+"""Generate local O(N) simulation jobs from a Python parameter file.
+
+Running this file without arguments preserves the historical workflow.  The
+command-line options make the same generator reusable by the examples without
+editing ``lsub/parameter_lsub.py`` or mixing independent campaigns.
+"""
+
+from __future__ import print_function
+
+import argparse
 import datetime
-import parameter_lsub as p
-from itertools import product
-
-def get_unique_folder_name(input_path="my_folder"):
-    # Extract the directory and base name from the input path.
-    dir_path = os.path.dirname(input_path)
-    base_name = os.path.basename(input_path)
-
-    suffix = "_1"
-    new_folder = os.path.join(dir_path, base_name)
-
-    # While the folder (or its variants with suffix) exists, increment the suffix and check again.
-    while os.path.exists(new_folder + suffix):
-        suffix = "_" + str(int(suffix.lstrip("_")) + 1)  # Increment the number after underscore or start from 1.
-
-    # Return the folder name with the original name or the appropriate suffix.
-    return new_folder + suffix
-
-def write_terms(f_w, para_name, para_val):
-    tab = "\t" * 1
-    slen = 20
-    f_w.write(para_name.ljust(slen) + tab + str(para_val).ljust(slen) + tab + "\n")
+import importlib.util
+import itertools
+import os
+from pathlib import Path
+import shlex
+import subprocess
+import sys
 
 
-########################################################################################
-JOB_NAME = 'ON'
-ROOT_DIR = 'jobs'
-# compiler_op = 'g++ -std=c++11 -O2'     # g++, icpc, clang++, ifort, gfortran, python3 ...
-########################################################################################
-# Input File
-arrays = [p.N, p.D, p.beta, p.L, p.h]
-arrays.extend([p.Seed, p.N_Measure, p.N_Each, p.N_Therm, p.N_Total, p.NBlock, p.MaxNBin, p.NperBin])
-########################################################################################
+PARAMETER_NAMES = (
+    "N",
+    "D",
+    "beta",
+    "L",
+    "h",
+    "Seed",
+    "N_Measure",
+    "N_Each",
+    "N_Therm",
+    "N_Total",
+    "NBlock",
+    "MaxNBin",
+    "NperBin",
+)
 
-# jobs file name
-now = datetime.datetime.now().strftime("%Y%m%d")
-main_folder = ROOT_DIR + '/' + now + '_' + JOB_NAME
-main_folder = get_unique_folder_name(main_folder)
-print('jobs are in ' + main_folder)
 
-combinations = list(product(*arrays))
+def parse_args():
+    script_dir = Path(__file__).resolve().parent
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--parameter-file",
+        type=Path,
+        default=script_dir / "parameter_lsub.py",
+        help="Python file containing the parameter arrays",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        help="exact batch directory; the default is lsub/jobs/DATE_JOB_NAME_N",
+    )
+    parser.add_argument("--job-name", default="ON", help="short campaign name")
+    parser.add_argument(
+        "--max-parallel",
+        type=int,
+        default=max(1, min(4, os.cpu_count() or 1)),
+        help="maximum jobs launched concurrently by lsub.sh",
+    )
+    parser.add_argument(
+        "--skip-build",
+        action="store_true",
+        help="use the existing bin/a.out instead of invoking make",
+    )
+    parser.add_argument(
+        "--make-jobs",
+        type=int,
+        default=max(1, os.cpu_count() or 1),
+        help="parallelism used for make",
+    )
+    return parser.parse_args()
 
-# compile code
-# os.system("cd ../bin && " + compiler_op + " ../src/" + "main.cpp")
-os.system("cd .. && make -j32")
-bin_dir = os.getcwd() + '/../bin/a.out'     # binary file address
 
-# create work files
-if not os.path.exists(ROOT_DIR):
-    os.makedirs(ROOT_DIR)
-os.system("mkdir " + main_folder)                           # create work file
-os.chdir(main_folder)                                       # enter into work file
+def load_parameters(path):
+    path = path.expanduser().resolve()
+    if not path.is_file():
+        raise FileNotFoundError("parameter file does not exist: {}".format(path))
+    spec = importlib.util.spec_from_file_location("on_job_parameters", str(path))
+    if spec is None or spec.loader is None:
+        raise RuntimeError("cannot load parameter file: {}".format(path))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
 
-# loop combinations
-num_jobs = 0
-for combo in combinations:
-########################################################################################
-    _N = combo[0]
-    _D = combo[1]
-    _beta = combo[2]
-    _L = combo[3]
-    _h = combo[4]
-    _seed = combo[-8]
-########################################################################################
-    job_name = "N_" + str(_N) +"_D_" + str(_D) + "_beta_" + str(_beta) + "_L_" + str(_L) + "_h_" + str(_h) + "_seed_" + str(_seed)
+    values = []
+    for name in PARAMETER_NAMES:
+        if not hasattr(module, name):
+            raise ValueError("parameter file is missing array '{}'".format(name))
+        value = list(getattr(module, name))
+        if not value:
+            raise ValueError("parameter array '{}' is empty".format(name))
+        values.append(value)
+    return values
 
-    os.system("mkdir " + job_name)                    # create each job file
-    os.system("touch ./" + job_name + "/input.txt")   # create input file for each job
 
-    f_w = open("./" + job_name + "/input.txt",'w')
-    f_w.write("//----- Model_Parameters" + "\n")
-    write_terms(f_w, "N",           combo[0])
-    write_terms(f_w, "D",           combo[1])
-    write_terms(f_w, "beta",        combo[2])
-    write_terms(f_w, "L",           combo[3])
-    write_terms(f_w, "h",           combo[4])
-    f_w.write(""+"\n")    
-    f_w.write("//----- Simulation_Parameters" + "\n")
-    write_terms(f_w, "Seed",        combo[-8])
-    write_terms(f_w, "N_Measure",   combo[-7])
-    write_terms(f_w, "N_Each",      combo[-6])
-    write_terms(f_w, "N_Therm",     combo[-5])
-    write_terms(f_w, "N_Total",     combo[-4])
-    write_terms(f_w, "NBlock",      combo[-3])
-    write_terms(f_w, "MaxNBin",     combo[-2])
-    write_terms(f_w, "NperBin",     combo[-1])
-    f_w.write(""+"\n")                               
-    f_w.close()
+def unique_default_directory(root, job_name):
+    date = datetime.datetime.now().strftime("%Y%m%d")
+    base = root / "jobs" / "{}_{}".format(date, job_name)
+    suffix = 1
+    candidate = Path("{}_{}".format(base, suffix))
+    while candidate.exists():
+        suffix += 1
+        candidate = Path("{}_{}".format(base, suffix))
+    return candidate
 
-################################################################################################# 
-################################################################################################# 
-# generate jobs
-    job_dir = os.getcwd()
-    num_jobs = num_jobs + 1
-    job_id = str(num_jobs)
-    f = open("job_"+job_id,'w')
-    f.write("cd  " + job_dir + "/" + job_name + "\n") 
-    f.write(bin_dir + '\n')
-    f.write( "echo " + job_name + " finished  at `date` " +" >> "+  "log.dat"+ '\n')
-    f.write("\n")
-    f.write("exit 0")
-    f.close()
 
-################################################################################################# 
-################################################################################################# 
-# create qsub.sh
-f_w = open('lsub.sh', 'w')
-f_w.write('#!/bin/bash' + '\n' + '\n')
-f_w.write('Njob=' + str(num_jobs) + '\n')
-f_w.write('sub=1' + '\n')
-f_w.write('if [ $sub -eq 1 ]' + '\n')
-f_w.write('then' + '\n')
-f_w.write('for ((i=1;i<=$Njob;i++)); do' + '\n')
-f_w.write('  {' + '\n')
-f_w.write('      chmod +x job_$i'  + '\n')
-f_w.write('      nohup ./job_$i &' + '\n')
-f_w.write('          sleep .5' + '\n')
-f_w.write('      echo $i' + '\n')
-f_w.write(' }' + '\n')
-f_w.write('done' + '\n')
-f_w.write('wait' + '\n')
-f_w.write('fi' + '\n')
-f_w.write('exit 0' + '\n')
-f_w.close()
+def shell_quote(value):
+    return shlex.quote(str(value))
 
-# chmod +x
-os.system('chmod +x lsub.sh')
 
-################################################################################################# 
-################################################################################################# 
-# fast.sh
-os.chdir('../../')
-f_w = open('fast.sh', 'w')
-f_w.write('cd ' + main_folder + ' && ./lsub.sh')
-f_w.close()
+def write_input(path, combo):
+    labels = PARAMETER_NAMES
+    with path.open("w") as stream:
+        stream.write("//----- Model_Parameters\n")
+        for label, value in zip(labels[:5], combo[:5]):
+            stream.write("{:<20}\t{}\n".format(label, value))
+        stream.write("\n//----- Simulation_Parameters\n")
+        for label, value in zip(labels[5:], combo[5:]):
+            stream.write("{:<20}\t{}\n".format(label, value))
+        stream.write("\n")
 
-# chmod +x
-os.system('chmod +x fast.sh')
+
+def job_directory_name(combo):
+    return "N_{}_D_{}_beta_{}_L_{}_h_{}_seed_{}".format(
+        combo[0], combo[1], combo[2], combo[3], combo[4], combo[5]
+    )
+
+
+def write_job_script(path, work_dir, executable, display_name):
+    with path.open("w") as stream:
+        stream.write("#!/usr/bin/env bash\n")
+        stream.write("set -eu\n")
+        stream.write("cd {}\n".format(shell_quote(work_dir)))
+        stream.write("{}\n".format(shell_quote(executable)))
+        stream.write(
+            "printf '%s finished at %s\\n' {} \"$(date)\"\n".format(
+                shell_quote(display_name)
+            )
+        )
+    path.chmod(0o755)
+
+
+def write_launcher(path, job_count, max_parallel):
+    with path.open("w") as stream:
+        stream.write("#!/usr/bin/env bash\n")
+        stream.write("set -eu\n")
+        stream.write("cd \"$(CDPATH= cd -- \"$(dirname -- \"$0\")\" && pwd)\"\n")
+        stream.write("max_parallel={}\n".format(max_parallel))
+        stream.write("running=0\n")
+        stream.write("pids=''\n")
+        stream.write("wait_batch() {\n")
+        stream.write("  status=0\n")
+        stream.write("  for pid in $pids; do\n")
+        stream.write("    wait \"$pid\" || status=1\n")
+        stream.write("  done\n")
+        stream.write("  pids=''\n")
+        stream.write("  running=0\n")
+        stream.write("  return \"$status\"\n")
+        stream.write("}\n")
+        stream.write("status=0\n")
+        stream.write("i=1\n")
+        stream.write("while [ \"$i\" -le {} ]; do\n".format(job_count))
+        stream.write("  ./job_$i >\"job_$i.log\" 2>&1 &\n")
+        stream.write("  pids=\"$pids $!\"\n")
+        stream.write("  running=$((running + 1))\n")
+        stream.write("  if [ \"$running\" -ge \"$max_parallel\" ]; then\n")
+        stream.write("    wait_batch || status=1\n")
+        stream.write("  fi\n")
+        stream.write("  i=$((i + 1))\n")
+        stream.write("done\n")
+        stream.write("if [ \"$running\" -gt 0 ]; then wait_batch || status=1; fi\n")
+        stream.write("exit \"$status\"\n")
+    path.chmod(0o755)
+
+
+def main():
+    args = parse_args()
+    if args.max_parallel < 1 or args.make_jobs < 1:
+        raise ValueError("--max-parallel and --make-jobs must be positive")
+
+    script_dir = Path(__file__).resolve().parent
+    repository = script_dir.parent
+    arrays = load_parameters(args.parameter_file)
+    combinations = list(itertools.product(*arrays))
+
+    if not args.skip_build:
+        subprocess.run(
+            ["make", "-C", str(repository), "-j{}".format(args.make_jobs)],
+            check=True,
+        )
+
+    executable = (repository / "bin" / "a.out").resolve()
+    if not executable.is_file():
+        raise FileNotFoundError(
+            "simulation executable is missing; run make or omit --skip-build: {}".format(
+                executable
+            )
+        )
+
+    if args.output_dir:
+        output_dir = args.output_dir.expanduser().resolve()
+        if output_dir.exists():
+            raise FileExistsError("output directory already exists: {}".format(output_dir))
+    else:
+        output_dir = unique_default_directory(script_dir, args.job_name).resolve()
+    output_dir.mkdir(parents=True)
+
+    for index, combo in enumerate(combinations, start=1):
+        display_name = job_directory_name(combo)
+        work_dir = output_dir / display_name
+        work_dir.mkdir()
+        write_input(work_dir / "input.txt", combo)
+        write_job_script(output_dir / "job_{}".format(index), work_dir, executable, display_name)
+
+    launcher = output_dir / "lsub.sh"
+    write_launcher(launcher, len(combinations), args.max_parallel)
+
+    if args.output_dir is None:
+        fast_script = script_dir / "fast.sh"
+        with fast_script.open("w") as stream:
+            stream.write("#!/usr/bin/env bash\nset -eu\n")
+            stream.write("{}\n".format(shell_quote(launcher)))
+        fast_script.chmod(0o755)
+
+    print("jobs are in {}".format(output_dir))
+    print("generated {} jobs; run {}".format(len(combinations), launcher))
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (FileNotFoundError, FileExistsError, RuntimeError, ValueError) as error:
+        print("error: {}".format(error), file=sys.stderr)
+        sys.exit(2)

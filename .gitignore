@@ -11,3 +11,4 @@ ouput.info
 /qsub/fast.sh
 /lsub/jobs/*/
 /qsub/jobs/*/
+/examples/runs/

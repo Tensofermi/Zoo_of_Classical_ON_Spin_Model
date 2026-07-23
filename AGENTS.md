@@ -21,6 +21,7 @@ Important regimes include 2D Ising criticality, 2D XY BKT behavior, ordinary 3D 
 - `input.txt` is the single-run input. `run.sh` builds/runs it.
 - `lsub/` generates local jobs. `qsub/` generates PBS or Slurm jobs.
 - `data/` formats, collects, splits, and combines results. `fit/` and `plot/` are analysis templates.
+- `examples/` contains three isolated, one-command critical-region demonstrations. Their generated jobs, processed tables, manifests, and figures live under the ignored `examples/runs/` tree.
 
 Preserve these invariants:
 

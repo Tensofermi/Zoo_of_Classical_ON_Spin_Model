@@ -62,6 +62,24 @@ The Swendsen–Wang and Wolff algorithms are employed for efficient configuratio
    - The output data will be stored in the `\data` directory.
    - You can then visualize the results using the `\plot` script.
 
+## One-command examples
+
+Three self-contained demonstrations cover 2D Ising criticality, the 3D O(3)
+transition, and the 2D XY BKT transition. Each command builds the simulator,
+uses `lsub` to generate and run an isolated local job grid, processes the
+outputs, and creates PNG and PDF figures:
+
+```bash
+./examples/01_2d_ising_critical/run.sh quick
+./examples/02_3d_heisenberg_critical/run.sh quick
+./examples/03_2d_xy_bkt/run.sh quick
+```
+
+The default `quick` profile is a qualitative smoke/demo run. Replace `quick`
+with `standard` for a denser grid and independent seeds. See
+[`examples/README.md`](examples/README.md) for dependencies, parameter ranges,
+output locations, and interpretation.
+
 
 ## Features
 - Simulates O(N) spin models in arbitrary spatial dimensions *d* and spin components *N*.

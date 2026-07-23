@@ -139,6 +139,7 @@ FORCE:
 $(BIN_DIR)/$(TARGET): $(CONFIG_TARGET) FORCE
 	@mkdir -p "$(@D)"
 	cp "$(CONFIG_TARGET)" "$@"
+	chmod +x "$@"
 
 test: $(TEST_BINARY)
 	"$(TEST_BINARY)"
