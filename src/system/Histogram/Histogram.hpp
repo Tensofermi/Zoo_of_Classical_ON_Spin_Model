@@ -5,15 +5,13 @@
 #include "../IOControl/IOControl.hpp"
 #include "../../config/Parameter_config.hpp"
 #include "HistogramBase.hpp"
-#define sprintf_s sprintf
-
 class Histogram
 {
     Clock& ck;
     IOControl& io;
     Parameter& para;
 
-    HistogramBase** Dis;
+    std::vector<std::unique_ptr<HistogramBase> > Dis;
     int NDis;
     bool saveOrNot = true;     // check if save or not
 

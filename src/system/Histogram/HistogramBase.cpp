@@ -4,6 +4,7 @@
 HistogramBase::HistogramBase(std::string _Type, std::string _Des, double _a, double _b, unsigned long _size, Clock& _ck, IOControl& _io) 
 : ck(_ck), io(_io)
 {
+	if (_size == 0) throw std::invalid_argument("histogram size must be positive");
     Des = _Des;
     disCount = 0;
     disNum = _size;
@@ -15,14 +16,16 @@ HistogramBase::HistogramBase(std::string _Type, std::string _Des, double _a, dou
 
     if (_Type == "linear")
     {
+		if (!std::isfinite(a) || !std::isfinite(b) || !(a < b))
+			throw std::invalid_argument("linear histogram requires a < b");
         disType = 0;
     }
     else if (_Type == "log")
     {
         disType = 1;
-        mappingArray.resize(logNum);
+        mappingArray.resize(disNum);
         unsigned long val = 0; 
-        for (int i = 0; i < logNum; i++)
+        for (unsigned long i = 0; i < disNum; i++)
         {
             mappingArray[i] = val;
             val += interval;
@@ -41,27 +44,18 @@ HistogramBase::HistogramBase(std::string _Type, std::string _Des, double _a, dou
 
 unsigned long HistogramBase::obs2Bin(double _obs)
 {
-    unsigned long Bin_;
-
     if (disType == 0)
     {
-        // mapping [a,b] into [0,disNum]
-        Bin_ = (long)((_obs - a) * disNum / (b - a));
-        return Bin_;
+		if (!std::isfinite(_obs) || _obs < a || _obs > b) return disNum;
+		if (_obs == b) return disNum - 1;
+        return static_cast<unsigned long>((_obs - a) * disNum / (b - a));
     }
     else if (disType == 1)
     {
-        int left, right;
-        left = 0;
-        right = logNum - 1;
-        while (left <= right)
-        {
-            Bin_ = left + (right - left) / 2;
-            if (_obs == mappingArray[Bin_]) return Bin_;
-            else if (mappingArray[Bin_] < _obs) left = Bin_ + 1;
-            else right = Bin_ - 1;
-        }
-
+		if (!std::isfinite(_obs) || mappingArray.empty() || _obs < mappingArray.front()) return disNum;
+		std::vector<int>::const_iterator upper = std::upper_bound(mappingArray.begin(), mappingArray.end(), _obs);
+		if (upper == mappingArray.end()) return disNum - 1;
+		return static_cast<unsigned long>(upper - mappingArray.begin() - 1);
     }
 
     return 0;
@@ -88,10 +82,10 @@ double HistogramBase::bin2Obs(unsigned long _bin)
 
 void HistogramBase::disAdd(double _obs)
 {
-    disCount++;
     unsigned long bindex = obs2Bin(_obs);
 
-    if (bindex >= disNum || bindex == 0) return; // overflow
+	if (bindex >= disNum) return;
+	disCount++;
     disData[bindex] += 1;
 
     if(disMax < bindex) disMax = bindex;
@@ -100,10 +94,10 @@ void HistogramBase::disAdd(double _obs)
 
 void HistogramBase::disDel(double _obs)
 {
-    disCount--;
     unsigned long bindex = obs2Bin(_obs);
 
-    if (bindex >= disNum || bindex == 0) return; // overflow
+	if (bindex >= disNum || disCount == 0) return;
+	disCount--;
     disData[bindex] -= 1;
 
     if(disMax < bindex) disMax = bindex;
@@ -112,9 +106,8 @@ void HistogramBase::disDel(double _obs)
 
 void HistogramBase::disPush(unsigned long _index, double _obs)
 {
-    disCount++;
-    
-    if (_index >= disNum || _index == 0) return; // overflow
+    if (_index >= disNum) return;
+	disCount++;
     disData[_index] += _obs;
 
     if(disMax < _index) disMax = _index;
@@ -123,9 +116,8 @@ void HistogramBase::disPush(unsigned long _index, double _obs)
 
 void HistogramBase::disPull(unsigned long _index, double _obs)
 {
-    disCount--;
-    
-    if (_index >= disNum || _index == 0) return; // overflow
+    if (_index >= disNum || disCount == 0) return;
+	disCount--;
     disData[_index] -= _obs;
 
     if(disMax < _index) disMax = _index;
@@ -139,6 +131,12 @@ void HistogramBase::saveDis()
     double obsVal, obsNum, obsDis;
 
     std::string disPrint = "# disCount = " + toStr(disCount) + "\n";
+	if (disCount == 0 || disMin >= disNum)
+	{
+		std::ofstream empty_file(Des + ".his");
+		empty_file << disPrint;
+		return;
+	}
     for (unsigned long i = disMin; i <= disMax; i++)
     {
         obsVal = bin2Obs(i);

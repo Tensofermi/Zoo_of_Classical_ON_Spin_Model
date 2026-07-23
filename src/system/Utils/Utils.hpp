@@ -31,9 +31,9 @@ inline int pbc_mod(int _a, int _L)
 // 将角度规范化到 [-π, π) 范围
 inline double normalizeAngle(double angle) {
     // 如果角度大于或等于 π，则减去 2π
-    while (angle >= M_PI) angle -= 2 * M_PI;
+    while (angle >= std::acos(-1.0)) angle -= 2 * std::acos(-1.0);
     // 如果角度小于 -π，则加上 2π
-    while (angle < -M_PI) angle += 2 * M_PI;
+    while (angle < -std::acos(-1.0)) angle += 2 * std::acos(-1.0);
     return angle;
 }
 

@@ -4,12 +4,19 @@
 //initialization
 void Hypercubic::set(int _Dim, int _L)
 {
+	if (_Dim <= 0 || _L <= 0) throw std::invalid_argument("lattice dimension and length must be positive");
     Dim = _Dim;
     L = _L;
-    Vol = pow(L, Dim);
+	Vol = 1;
+	for (int i = 0; i < Dim; ++i)
+	{
+		if (Vol > std::numeric_limits<long>::max() / L)
+			throw std::overflow_error("lattice volume exceeds long range");
+		Vol *= L;
+	}
     NNb = 2 * Dim;
 
-    x_ = new int[Dim];
+    x_.assign(Dim, 0);
 }
 
 int Hypercubic::getL()
@@ -61,8 +68,10 @@ long Hypercubic::getSite(int *_Component)               // (x_n, x_n-1, x_n-2, .
     return Vc;
 }
 
-long Hypercubic::getSite(std::vector<int> &_Component)  // (x_n, x_n-1, x_n-2, ...) --> Site
+long Hypercubic::getSite(const std::vector<int> &_Component)  // (x_n, x_n-1, x_n-2, ...) --> Site
 {
+	if (_Component.size() != static_cast<std::size_t>(Dim))
+		throw std::invalid_argument("coordinate dimension does not match lattice");
     long Vc;
     Vc = _Component[0];
     for (int i = 1; i < Dim; i++)
@@ -123,17 +132,14 @@ long Hypercubic::getDirSite(long _Site, int _Dir, int _Length)
     for (i = 0; i < Dim; i++) x_[i] = getComponent(_Site, i);
     if(_Dir < Dim)
     {
-        x_[_Dir] += _Length; 
-        if((x_[_Dir])>=L) x_[_Dir] -= L;
+		x_[_Dir] = (x_[_Dir] + (_Length % L) + L) % L;
     }
     else
     {
         _Dir = getOpsDir(_Dir);
-        x_[_Dir] -= _Length; 
-        if((x_[_Dir])<0) x_[_Dir] += L;
+		x_[_Dir] = (x_[_Dir] - (_Length % L) + L) % L;
     }
     return getSite(x_);
 
 }
-
 

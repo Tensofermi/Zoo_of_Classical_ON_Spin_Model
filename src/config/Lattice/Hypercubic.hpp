@@ -21,7 +21,7 @@ protected:
     long Vol = 10;
     int NNb = 2;
 
-    int* x_ = nullptr;
+    std::vector<int> x_;
 
 public:
     void set(int _Dim, int _L);
@@ -35,7 +35,7 @@ public:
 
     int getComponent(long _Site, int _Dir);                    // Get component in direction _Dir of site _Site
     long getSite(int *_Component);                             // Get the site for component _Component
-    long getSite(std::vector<int> &_Component);                // Get the site for component _Component [vector version]
+    long getSite(const std::vector<int> &_Component);          // Get the site for component _Component [vector version]
 
     int getDir(long _Site, long _NNSite);                      // Get Direction
     long getNNSite(long _Site, int _Dir);                      // Get the nearest neighbor site in the direction _Dir

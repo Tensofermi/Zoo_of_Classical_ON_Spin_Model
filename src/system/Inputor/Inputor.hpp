@@ -4,13 +4,11 @@
 #include "../IOControl/IOControl.hpp"
 #include "../../config/Parameter_config.hpp"
 #include "InputorGroup.hpp"
-#define sprintf_s sprintf
-
 class Inputor
 {
     std::string InFile;  // name of input file
 
-    InputorGroup** InpGroup;
+    std::vector<std::unique_ptr<InputorGroup> > InpGroup;
     int NGroup;
 
     IOControl& io;
@@ -20,6 +18,7 @@ class Inputor
     Inputor(IOControl& _io, Parameter& _para, std::string name = "input.txt");   // default name is "input.txt"
     void initInputor();
     void initSystemInputor();
+    void validateInputor();
     void readInputor();             // Key function !!
     std::string exportInputor();
 
@@ -33,5 +32,5 @@ class Inputor
 template <typename T1, typename T2>
 void Inputor::addInputor(T1& variable, std::string key, T2 initVar, std::string des)
 {
-    InpGroup[NGroup - 1]->addInputor(variable, key, initVar, des);
+    InpGroup.back()->addInputor(variable, key, initVar, des);
 }

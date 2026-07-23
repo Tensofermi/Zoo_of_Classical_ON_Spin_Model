@@ -43,7 +43,8 @@ void Configuration::initialConf()
 void Configuration::initialAlgo()
 {
     //--- Initialize Queue and Memory
-    Que.resize(Vol);
+    // Cluster algorithms intentionally use indices 1..Vol.
+    Que.resize(static_cast<std::size_t>(Vol) + 1);
     Mem.resize(Vol);
     for (int i = 0; i < Vol; i++)
     {
@@ -64,7 +65,7 @@ void Configuration::initialMeas()
     for (int i = 0; i < Dim; i++) 
         k_vec[i] = 0;
 
-    k_vec[0] = 2 * M_PI / L;    // kx = 2 Pi / L
+    k_vec[0] = 2 * std::acos(-1.0) / L;    // kx = 2 Pi / L
 
     k_cos.resize(Vol);
     k_sin.resize(Vol);

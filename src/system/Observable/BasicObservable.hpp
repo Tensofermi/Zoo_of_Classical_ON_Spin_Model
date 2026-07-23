@@ -5,13 +5,11 @@
 #include "../IOControl/IOControl.hpp"
 #include "../../config/Parameter_config.hpp"
 #include "ObservableBase.hpp"
-#define sprintf_s sprintf
-
 class BasicObservable :public ObservableBase
 {
 public:
 	double  Value;
-	double* BinList;
+		std::vector<double> BinList;
 
 public:
 	BasicObservable();

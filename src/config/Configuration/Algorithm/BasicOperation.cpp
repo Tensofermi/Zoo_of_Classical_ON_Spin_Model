@@ -15,7 +15,7 @@ void Configuration::randSpin_()
         }
         case 2:
         {    
-            double theta = rn.getRandomDouble(0, 2 * M_PI);
+            double theta = rn.getRandomDouble(0, 2 * std::acos(-1.0));
             tempSpin[0] = cos(theta);
             tempSpin[1] = sin(theta);
             break;
@@ -23,7 +23,7 @@ void Configuration::randSpin_()
         case 3:
         {
             double z = 2 * rn.getRandomDouble() - 1;
-            double theta = rn.getRandomDouble(0, 2 * M_PI);
+            double theta = rn.getRandomDouble(0, 2 * std::acos(-1.0));
             tempSpin[0] = cos(theta) * sqrt(1 - z * z);
             tempSpin[1] = sin(theta) * sqrt(1 - z * z);
             tempSpin[2] = z;

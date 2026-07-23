@@ -2,8 +2,6 @@
 #include <bits/stdc++.h>
 #include "../Utils/Utils.hpp"
 #include "InputorBase.hpp"
-#define sprintf_s sprintf
-
 template <typename T>
 class InputorTerm : public InputorBase
 {
@@ -20,11 +18,9 @@ public:
 
 template <typename T>
 InputorTerm<T>::InputorTerm(T& variable, std::string key, T initVar, std::string des)
+    : Var(&variable), Key(key), Flag(0), Des(des)
 {
-    Var = &variable;
-   *Var = initVar;
-    Key = key;
-    Des = des;
+    *Var = initVar;
 }
 
 template <typename T>
@@ -36,7 +32,12 @@ int InputorTerm<T>::readInputor(std::string Line)
     stream >> key;
     if (key == Key)
     {
-        stream >> *Var;    // send var to program varible !!
+        T value;
+        if (!(stream >> value))
+        {
+            return -1;
+        }
+        *Var = value;
         Flag++;
         return 1;
     }
@@ -62,7 +63,7 @@ std::string InputorTerm<T>::exportInputor()
     default:
         flag = "Last";
     }
-    sprintf_s(a, "%-12.12s%-20.20s%-6.6s%-40.40s", Key.c_str(), datastr.c_str(), flag.c_str(), Des.c_str());
+    std::snprintf(a, sizeof(a), "%-12.12s%-20.20s%-6.6s%-40.40s", Key.c_str(), datastr.c_str(), flag.c_str(), Des.c_str());
     printstr = a;
     return printstr;
 }

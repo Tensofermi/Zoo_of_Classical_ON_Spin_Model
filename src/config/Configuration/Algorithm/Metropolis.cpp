@@ -29,7 +29,7 @@ void Configuration::Metropolis()
         dE += - h * dV[0];
 
         //--- Attempt to Update
-        P_metro = exp(- Beta * dE);
+        P_metro = dE <= 0.0 ? 1.0 : std::exp(-Beta * dE);
         if(rn.getRandomDouble() < P_metro)
             Site[i_Site] = tempSpin;
     }

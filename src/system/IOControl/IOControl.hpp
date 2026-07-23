@@ -6,8 +6,8 @@ class IOControl
 {
     std::vector<void(*)(std::string File, std::string Info)> ExcuteFunc;
 
-    int* Opers;
-    std::string* Files;
+    std::vector<int> Opers;
+    std::vector<std::string> Files;
 
     int NoPrtOrWrt;     // do nothing
     int Prt;            // print data in terminal
@@ -27,7 +27,6 @@ public:
     int OuputCont = 5;	//	output current obs
 
     IOControl();
-    ~IOControl();
     void initIOControl();
     void clearInfo();
 

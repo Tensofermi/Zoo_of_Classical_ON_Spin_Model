@@ -5,7 +5,13 @@ void InputorGroup::readInputor(std::string Line)
     int num = 0;
     for (int i = 0; i < NInp; i++)
     {
-        num += Inp[i]->readInputor(Line);
+        const int result = Inp[i]->readInputor(Line);
+        if (result < 0)
+        {
+            io.exportInfo(io.ErrorInfo, "Invalid value for input term: " + Line + "\n");
+            return;
+        }
+        num += result;
     }
     if (num == 0)
     {
@@ -24,7 +30,6 @@ void InputorGroup::readInputor(std::string Line)
 InputorGroup::InputorGroup(IOControl& _io, std::string key, std::string des) : io(_io)
 {
     NInp = 0;
-    Inp = nullptr;
     Key = key;
     Des = des;
 }

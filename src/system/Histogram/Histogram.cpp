@@ -4,7 +4,6 @@
 Histogram::Histogram(Clock& _ck, IOControl& _io, Parameter& _para) : ck(_ck), io(_io), para(_para)
 {
     NDis = 0;
-    Dis = nullptr;
     initDistr();
 }
 
@@ -14,14 +13,7 @@ void Histogram::addDistr(int & _Name, std::string _Type, std::string _Des,  doub
 {
     _Name = NDis;
     
-    HistogramBase** Dis0 = new HistogramBase* [NDis + 1];
-    for (int i = 0; i < NDis; i++)
-    {
-        Dis0[i] = Dis[i];
-    }
-    Dis0[NDis] = new HistogramBase(_Type, _Des, _a, _b, _size, ck, io);
-    delete[] Dis;
-    Dis = Dis0;
+    Dis.emplace_back(new HistogramBase(_Type, _Des, _a, _b, _size, ck, io));
     NDis++;
 }
 

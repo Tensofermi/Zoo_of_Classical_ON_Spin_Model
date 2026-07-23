@@ -4,8 +4,6 @@
 #include "../Clock/Clock.hpp"
 #include "../IOControl/IOControl.hpp"
 #include "../../config/Parameter_config.hpp"
-#define sprintf_s sprintf
-
 class ObservableBase
 {
 public:
@@ -15,7 +13,7 @@ public:
 	
 	std::string Name;
 	std::string Des;
-	double* BlkList;
+		std::vector<double> BlkList;
 	double Ave;
 	double Err;
 	double Cor;

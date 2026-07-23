@@ -44,7 +44,7 @@ void Observable::calCombiObser()  // add Result[]
 
 	Result[para.i_Qm] = Ob[para.i_M2] * Ob[para.i_M2] / Ob[para.i_M4];
 	Result[para.i_Qm_fk] = Ob[para.i_S2] * Ob[para.i_S2] / Ob[para.i_SM4];
-	Result[para.i_corr_L] = 1.0 / (2 * para.L * sin(M_PI / para.L)) * sqrt(Ob[para.i_M2] / Ob[para.i_Mk2] - 1.0);
+	Result[para.i_corr_L] = 1.0 / (2 * para.L * sin(std::acos(-1.0) / para.L)) * sqrt(Ob[para.i_M2] / Ob[para.i_Mk2] - 1.0);
 	Result[para.i_C12] = Ob[para.i_C2] / Ob[para.i_C1];
 
 	Result[para.i_K] = Ob[para.i_M2_E] / Ob[para.i_M2] - Ob[para.i_E];

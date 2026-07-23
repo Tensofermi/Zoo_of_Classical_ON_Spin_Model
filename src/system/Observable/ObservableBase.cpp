@@ -2,17 +2,10 @@
 
 
 ObservableBase::ObservableBase()
+	: NBlock(0), MaxNBin(0), NperBin(0), Name("UNNAMED"),
+	  Des("This Observable has not been initialized!"), Ave(0),
+	  Err(std::numeric_limits<double>::infinity()), Cor(0), A(0), B(1)
 {
-    Name = "UNNAMED";
-    Des = "This Observable has not been initialized!";
-
-    BlkList = new double[NBlock];
-    for (unsigned long i = 0; i < NBlock; i++) BlkList[i] = 0;
-    Ave = 0;
-    Err = 1e100;
-    Cor = 0;
-    A = 0;
-    B = 1;
 }
 
 ObservableBase::ObservableBase(std::string _Name, std::string _Des, double _A, double _B, unsigned long _NBlock, unsigned long _MaxNbin, unsigned long _NperBin)
@@ -25,8 +18,10 @@ ObservableBase::ObservableBase(std::string _Name, std::string _Des, double _A, d
 	Des = _Des;
 	A = _A;
 	B = _B;
-	BlkList = new double[NBlock];
-	for (unsigned long i = 0; i < NBlock; i++) BlkList[i] = 0;
+	if (NBlock < 2) throw std::invalid_argument("NBlock must be at least 2");
+	if (MaxNBin == 0) throw std::invalid_argument("MaxNBin must be positive");
+	if (NperBin == 0) throw std::invalid_argument("NperBin must be positive");
+	BlkList.assign(NBlock, 0.0);
     Ave = 0;
     Err = 1e100;
     Cor = 0;
@@ -34,6 +29,8 @@ ObservableBase::ObservableBase(std::string _Name, std::string _Des, double _A, d
 
 void ObservableBase::calErr()
 {
+	if (NBlock < 2 || BlkList.size() != NBlock)
+		throw std::logic_error("Observable blocks are not initialized");
     unsigned long i;
     double err, cor, ave;
     double devn, devp;
@@ -56,14 +53,14 @@ void ObservableBase::calErr()
 	{
 		Cor = cor / err;
 	}
-    Err = sqrt(err / NBlock / (NBlock - 1));
+    Err = sqrt(err / static_cast<double>(NBlock) / static_cast<double>(NBlock - 1));
 }
 
 std::string ObservableBase::printAverage(int Index)
 {
 	char a[150];
 	std::string str;
-	sprintf_s(a,"%-4d %-12.12s = % -16.8e % -3.8e % -3.3e  %-40.40s\n", Index, ("<"+Name+">").c_str(), A+B*Ave, fabs(B)*Err, Cor, Des.c_str());
+	std::snprintf(a, sizeof(a), "%-4d %-12.12s = % -16.8e % -3.8e % -3.3e  %-40.40s\n", Index, ("<"+Name+">").c_str(), A+B*Ave, fabs(B)*Err, Cor, Des.c_str());
     str = a;
 	//--------------------------------------------------//
 	//-------------------- save obs --------------------//
@@ -83,7 +80,7 @@ std::string ObservableBase::printAverage(int Index)
 
 double ObservableBase::getBlock(int i)
 {
-	return BlkList[i];
+	return BlkList.at(static_cast<std::size_t>(i));
 }
 
 double ObservableBase::getAve()

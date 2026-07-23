@@ -4,11 +4,11 @@
 Inputor::Inputor(IOControl& _io, Parameter& _para, std::string input_name) : io(_io), para(_para)
 {
     InFile = input_name;
-    InpGroup = nullptr;
     NGroup = 0;
     initInputor();
     initSystemInputor();
     readInputor();
+    validateInputor();
     io.exportInfo(io.OuputInfo, exportInputor());
 }
 
@@ -16,14 +16,7 @@ Inputor::Inputor(IOControl& _io, Parameter& _para, std::string input_name) : io(
 
 void Inputor::setGroup(std::string key, std::string des)
 {
-    InputorGroup** InpGroup0 = new InputorGroup* [NGroup + 1];
-    for (int i = 0; i < NGroup; i++)
-    {
-        InpGroup0[i] = InpGroup[i];
-    }
-    InpGroup0[NGroup] = new InputorGroup(io, key, des);
-    delete[] InpGroup;
-    InpGroup = InpGroup0;
+    InpGroup.emplace_back(new InputorGroup(io, key, des));
     NGroup++;
 }
 
@@ -131,4 +124,3 @@ void Inputor::initSystemInputor()
     addInputor(para.NperBin   ,    "NperBin"    ,        1          );
     
 }
-

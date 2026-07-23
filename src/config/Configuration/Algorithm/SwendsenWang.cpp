@@ -51,7 +51,7 @@ void Configuration::SwendsenWang()
                 // obtain the interacting k_Site
                 k_Site = Latt.getNNSite(j_Site, j);
                 project = (tempSpin * Site[j_Site]) * (tempSpin * Site[k_Site]);
-                P_sw = 1.0 - exp(-2 * Beta * project);
+                P_sw = project > 0.0 ? -std::expm1(-2.0 * Beta * project) : 0.0;
                 if(Mem[k_Site] == 0 && rn.getRandomDouble() < P_sw)
                 {
                     front++;
@@ -89,7 +89,11 @@ void Configuration::SwendsenWang()
             }
     
             //--- Flip Cluter Spins
-            if(rn.getRandomDouble() < exp(- Beta * after) / (exp(- Beta * after) + exp(- Beta * before)))
+            const double scaled_delta = Beta * (after - before);
+            const double acceptance = scaled_delta >= 0.0
+                ? std::exp(-scaled_delta) / (1.0 + std::exp(-scaled_delta))
+                : 1.0 / (1.0 + std::exp(scaled_delta));
+            if(rn.getRandomDouble() < acceptance)
             {
                 for (int j = 1; j <= front; j++)    // start from 1 !
                     flipSpin(Que[j], tempSpin);

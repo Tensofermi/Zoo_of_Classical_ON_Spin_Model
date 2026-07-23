@@ -5,7 +5,6 @@
 #include "../IOControl/IOControl.hpp"
 #include "../../config/Parameter_config.hpp"
 #include "ObservableBase.hpp"
-#define sprintf_s sprintf
 
 class CombiObservable :public ObservableBase
 {

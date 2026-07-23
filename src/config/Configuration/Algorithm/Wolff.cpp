@@ -38,7 +38,7 @@ void Configuration::Wolff()
         {
             j_Site = Latt.getNNSite(i_Site, i);
             project = (tempSpin * Site[i_Site]) * (tempSpin * Site[j_Site]);
-            P_sw = 1.0 - exp(-2 * Beta * project);
+            P_sw = project > 0.0 ? -std::expm1(-2.0 * Beta * project) : 0.0;
             if(Mem[j_Site] == 0 && rn.getRandomDouble() < P_sw)
             {
                 front++; 
@@ -60,7 +60,9 @@ void Configuration::Wolff()
         }
 
         //--- Flip Cluter Spins
-        if(rn.getRandomDouble() < exp(- Beta * after) / exp(- Beta * before))
+        const double delta_energy = after - before;
+        const double acceptance = delta_energy <= 0.0 ? 1.0 : std::exp(-Beta * delta_energy);
+        if(rn.getRandomDouble() < acceptance)
         {
             for (int j = 1; j <= front; j++)    // start from 1 !
                 flipSpin(Que[j], tempSpin);

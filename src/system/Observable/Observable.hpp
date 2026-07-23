@@ -6,8 +6,6 @@
 #include "../../config/Parameter_config.hpp"
 #include "BasicObservable.hpp"
 #include "CombiObservable.hpp"
-#define sprintf_s sprintf
-
 class Observable
 {
 	Clock& ck;
@@ -17,8 +15,8 @@ class Observable
 public:
 	unsigned int NBasic;
 	unsigned int NCombi;
-	BasicObservable** BasicObser;
-	CombiObservable** CombiObser;
+		std::vector<std::unique_ptr<BasicObservable> > BasicObser;
+		std::vector<std::unique_ptr<CombiObservable> > CombiObser;
 	std::vector<double> Ob;
 	std::vector<double> Result;
 

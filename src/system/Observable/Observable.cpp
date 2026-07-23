@@ -17,8 +17,6 @@ Observable::Observable(Clock& _ck, IOControl& _io, Parameter& _para) : ck(_ck), 
 {
 	NBasic = 0;
 	NCombi = 0;
-	BasicObser = nullptr;
-	CombiObser = nullptr;
 	NBlock = para.NBlock;
 	MaxNBin = para.MaxNBin;
 	NperBin = para.NperBin;
@@ -40,12 +38,8 @@ void Observable::calAveErr()
 
 void Observable::addBasicObser(int &_Index, std::string _Name, std::string _Des, double _A, double _B)
 {
-	BasicObservable** BasicObser0 = new BasicObservable*[NBasic+1];
 	_Index = NBasic;
-	for (unsigned int i = 0; i < NBasic; i++) BasicObser0[i] = BasicObser[i];
-    BasicObser0[NBasic] = new BasicObservable(_Name, _Des, _A, _B, NBlock, MaxNBin, NperBin);
-	delete [] BasicObser;
-	BasicObser = BasicObser0;
+	BasicObser.emplace_back(new BasicObservable(_Name, _Des, _A, _B, NBlock, MaxNBin, NperBin));
 	NBasic++;
 	Ob.clear();
 	Ob.resize(NBasic);
@@ -53,12 +47,8 @@ void Observable::addBasicObser(int &_Index, std::string _Name, std::string _Des,
 
 void Observable::addCombiObser(int &_Index, std::string _Name, std::string _Des, double _A, double _B)
 {
-	CombiObservable** CombiObser0 = new CombiObservable*[NCombi+1];
 	_Index = NCombi;
-	for (unsigned int i = 0; i < NCombi; i++) CombiObser0[i] = CombiObser[i];
-    CombiObser0[NCombi] = new CombiObservable(_Name, _Des, _A, _B, NBlock, MaxNBin, NperBin);
-	delete [] CombiObser;
-	CombiObser = CombiObser0;
+	CombiObser.emplace_back(new CombiObservable(_Name, _Des, _A, _B, NBlock, MaxNBin, NperBin));
 	NCombi++;
 	Result.clear();
 	Result.resize(NCombi);
@@ -88,7 +78,8 @@ std::string Observable::printAverage()
 	{
 		str += CombiObser[i]->printAverage(i+NBasic);
 	}
-	str += "NperBin = " + toStr(NperBin) + " , NperBlk = " + toStr(NperBin * NBin / NBlock) + " , NBin = " + toStr(NBin) + "\n";
+	const unsigned long used_bins = (NBin / NBlock) * NBlock;
+	str += "NperBin = " + toStr(NperBin) + " , NperBlk = " + toStr(NperBin * NBin / NBlock) + " , NBin = " + toStr(NBin) + " , UsedNBin = " + toStr(used_bins) + "\n";
 	return str;
 }
 

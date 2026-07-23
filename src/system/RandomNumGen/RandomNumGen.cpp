@@ -11,66 +11,42 @@ RandomNumGen::RandomNumGen(int Seed)
     initRandomNumGen(Seed);
 }
 
-RandomNumGen::~RandomNumGen()
-{
-  delete[] inxt1; inxt1 = nullptr;
-  delete[] inxt2; inxt2 = nullptr;
-  delete[] ir1; ir1 = nullptr;
-  delete[] ir2; ir2 = nullptr;
-  delete[] irn; irn = nullptr;
-}
-
 void RandomNumGen::initRandomNumGen(int Seed)
 {
-    tm32 = 1.0e0 / pow(2.0e0, 32.0e0);
-    mult = 32781;
+    tm32 = 1.0 / 4294967296.0;
     mod2 = 2796203; mul2 = 125;
     len1 = 9689; ifd1 = 471;
     len2 = 127; ifd2 = 30;
     mxrn = 10000;
     
-    if(inxt1 == nullptr && inxt2 == nullptr && ir1 == nullptr && ir2 == nullptr && irn == nullptr)
-        {
-            inxt1 = new int[len1 + 1];
-            inxt2 = new int[len2 + 1];
-              ir1 = new int[len1 + 1];
-              ir2 = new int[len2 + 1];
-              irn = new int[mxrn + 1];
-        }
-    else
-        {
-            delete[] inxt1;
-            delete[] inxt2;
-            delete[] ir1;
-            delete[] ir2;
-            delete[] irn;
-            inxt1 = new int[len1 + 1];
-            inxt2 = new int[len2 + 1];
-              ir1 = new int[len1 + 1];
-              ir2 = new int[len2 + 1];
-              irn = new int[mxrn + 1];
-        }
+    inxt1.assign(len1 + 1, 0);
+    inxt2.assign(len2 + 1, 0);
+    ir1.assign(len1 + 1, 0);
+    ir2.assign(len2 + 1, 0);
+    irn.assign(mxrn + 1, 0);
 
-    int i_r, k_r, k1_r;
-    int iseed;
+    int i_r;
+    std::uint32_t k_r;
+    std::int32_t k1_r;
     nrannr = mxrn;
-    iseed = abs(Seed) + 1;
-    k_r = pow(3.0, 18.0) + 2 * iseed;
-    k1_r = 1313131 * iseed;
-    k1_r = k1_r - (k1_r / mod2) * mod2;
+    const std::uint32_t iseed = static_cast<std::uint32_t>(Seed < 0 ? -static_cast<std::int64_t>(Seed) : Seed) + 1u;
+    k_r = 387420489u + 2u * iseed;
+    const std::uint32_t initial_k1 = 1313131u * iseed;
+    std::memcpy(&k1_r, &initial_k1, sizeof(k1_r));
+    k1_r %= mod2;
     for (i_r = 1; i_r <= len1; i_r++)
     {
-        k_r = k_r * mult;
+        k_r *= 32781u;
         k1_r = k1_r * mul2;
-        k1_r = k1_r - (k1_r / mod2) * mod2;
-        ir1[i_r] = k_r + k1_r * 8193;
+        k1_r %= mod2;
+        ir1[i_r] = k_r + static_cast<std::uint32_t>(static_cast<std::int64_t>(k1_r) * 8193);
     }
     for (i_r = 1; i_r <= len2; i_r++)
     {
-        k_r = k_r * mult;
+        k_r *= 32781u;
         k1_r = k1_r * mul2;
-        k1_r = k1_r - (k1_r / mod2) * mod2;
-        ir2[i_r] = k_r + k1_r * 4099;
+        k1_r %= mod2;
+        ir2[i_r] = k_r + static_cast<std::uint32_t>(static_cast<std::int64_t>(k1_r) * 4099);
     }
     for (i_r = 1; i_r <= len1; i_r++)
     {
@@ -88,9 +64,10 @@ void RandomNumGen::initRandomNumGen(int Seed)
     ipnf2 = ifd2 + 1;
 }
 
-int RandomNumGen::getRandomNum()
+std::uint32_t RandomNumGen::nextWord()
 {
-    int i_r, l_r, k_r;
+    int i_r;
+    std::uint32_t l_r, k_r;
     nrannr = nrannr + 1;
     if (nrannr >= mxrn)
     {
@@ -111,19 +88,29 @@ int RandomNumGen::getRandomNum()
     return irn[nrannr];
 }
 
+std::int32_t RandomNumGen::getRandomNum()
+{
+    const std::uint32_t word = nextWord();
+    std::int32_t result;
+    std::memcpy(&result, &word, sizeof(result));
+    return result;
+}
+
 int RandomNumGen::getRandomNum(int MaxNum)
 {
+    if (MaxNum <= 0) throw std::invalid_argument("MaxNum must be positive");
     return (int)(MaxNum * getRandomDouble());
 }
 
 long RandomNumGen::getRandomNum(long MaxNum)
 {
+    if (MaxNum <= 0) throw std::invalid_argument("MaxNum must be positive");
     return (long)(MaxNum * getRandomDouble());
 }
 
 double RandomNumGen::getRandomDouble()
 {
-    return getRandomNum() * tm32 + 0.5e0;
+    return static_cast<double>(nextWord() ^ 0x80000000u) * tm32;
 }
 
 double RandomNumGen::getRandomDouble(double a, double b)
@@ -133,5 +120,5 @@ double RandomNumGen::getRandomDouble(double a, double b)
 
 double RandomNumGen::getGaussian()
 {
-    return sqrt(-2.0 * log(1.0 - getRandomDouble())) * cos(2.0 * M_PI * getRandomDouble());
+    return sqrt(-2.0 * log(1.0 - getRandomDouble())) * cos(2.0 * std::acos(-1.0) * getRandomDouble());
 }

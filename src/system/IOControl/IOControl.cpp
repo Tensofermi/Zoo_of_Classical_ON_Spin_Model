@@ -9,6 +9,8 @@ void IOControl::clearInfo()   // delete the last files
 
 void IOControl::exportInfo(int InfoType, std::string Info)
 {
+	if (InfoType < 0 || InfoType >= ExportInfoNum)
+		throw std::out_of_range("invalid IOControl information type");
     int x = Opers[InfoType];
     for (int i = 0; x != 0; i++, x = x / 2)
     {
@@ -24,33 +26,26 @@ IOControl::IOControl()
     void prt(std::string File, std::string Info);
     void wrt(std::string File, std::string Info);
     void hisWrt(std::string File, std::string Info);
-    void abort(std::string File, std::string info);
+    void abortProgram(std::string File, std::string info);
 
     // File names and operations for each file
-    Files = new std::string[ExportInfoNum];
-    Opers = new int[ExportInfoNum];
+    Files.resize(ExportInfoNum);
+    Opers.resize(ExportInfoNum);
 
     // Basic operations for IO control
-    NoPrtOrWrt = (int)pow(2, 0);
-           Prt = (int)pow(2, 1);
-           Wrt = (int)pow(2, 2);
-        HisWrt = (int)pow(2, 3);
-         Abort = (int)pow(2, 4);
+    NoPrtOrWrt = 1 << 0;
+           Prt = 1 << 1;
+           Wrt = 1 << 2;
+        HisWrt = 1 << 3;
+         Abort = 1 << 4;
 
     ExcuteFunc.push_back(noPrtOrWrt);
     ExcuteFunc.push_back(prt);
     ExcuteFunc.push_back(wrt);
     ExcuteFunc.push_back(hisWrt);
-    ExcuteFunc.push_back(abort);
+    ExcuteFunc.push_back(abortProgram);
 
     initIOControl();
-    clearInfo();
-}
-
-IOControl::~IOControl()
-{
-    delete[] Opers; Opers = nullptr; 
-    delete[] Files; Files = nullptr; 
 }
 
 //--------------------------------
@@ -85,7 +80,7 @@ void hisWrt(std::string File, std::string Info)
     return;
 }
 
-void abort(std::string File, std::string info)
+void abortProgram(std::string File, std::string info)
 {
     std::string str = "";
     str += "Attention!\n    This program is aborted, see details in file\"" + File + "\"\n";
@@ -94,5 +89,5 @@ void abort(std::string File, std::string info)
     file.open(File.c_str(), std::ios::app);
     file << info;
     file.close();
-    exit(0);
+    std::exit(EXIT_FAILURE);
 }

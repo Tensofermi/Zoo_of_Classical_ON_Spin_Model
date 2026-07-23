@@ -4,14 +4,21 @@
 // Initialization
 void Hyperrectangle::set(int _Dim, std::initializer_list<int> initList)
 {
+	if (_Dim <= 0 || initList.size() != static_cast<std::size_t>(_Dim))
+		throw std::invalid_argument("dimension and side-length count must match and be positive");
     Dim = _Dim;
     L.assign(initList); // 使用assign将初始化列表赋给成员变量L
     Vol = 1;
-    for (int i = 0; i < Dim; ++i)
+	for (int i = 0; i < Dim; ++i)
+	{
+		if (L[i] <= 0) throw std::invalid_argument("side lengths must be positive");
+		if (Vol > std::numeric_limits<long>::max() / L[i])
+			throw std::overflow_error("lattice volume exceeds long range");
         Vol *= L[i];
+	}
 
     NNb = 2 * Dim;
-    x_ = new int[Dim];
+    x_.assign(Dim, 0);
 }
 
 
@@ -55,18 +62,20 @@ long Hyperrectangle::getSite(int *_Component)               // (x_n, x_n-1, x_n-
     Vc = _Component[0];
     for (int i = 1; i < Dim; i++)
     {
-        Vc = _Component[i] + Vc * L[Dim-i];
+        Vc = _Component[i] + Vc * L[i];
     }
     return Vc;
 }
 
-long Hyperrectangle::getSite(std::vector<int> &_Component)  // (x_n, x_n-1, x_n-2, ...) --> Site
+long Hyperrectangle::getSite(const std::vector<int> &_Component)  // (x_n, x_n-1, x_n-2, ...) --> Site
 {
+	if (_Component.size() != static_cast<std::size_t>(Dim))
+		throw std::invalid_argument("coordinate dimension does not match lattice");
     long Vc;
     Vc = _Component[0];
     for (int i = 1; i < Dim; i++)
     {
-        Vc = _Component[i] + Vc * L[Dim-i];
+        Vc = _Component[i] + Vc * L[i];
     }
     return Vc;
 }
@@ -120,17 +129,14 @@ long Hyperrectangle::getDirSite(long _Site, int _Dir, int _Length)
     for (int i = 0; i < Dim; i++) x_[i] = getComponent(_Site, i);
     if(_Dir < Dim)
     {
-        x_[_Dir] += _Length; 
-        if((x_[_Dir])>=L[_Dir]) x_[_Dir] -= L[_Dir];
+		x_[_Dir] = (x_[_Dir] + (_Length % L[_Dir]) + L[_Dir]) % L[_Dir];
     }
     else
     {
         _Dir = getOpsDir(_Dir);
-        x_[_Dir] -= _Length; 
-        if((x_[_Dir])<0) x_[_Dir] += L[_Dir];
+		x_[_Dir] = (x_[_Dir] - (_Length % L[_Dir]) + L[_Dir]) % L[_Dir];
     }
     return getSite(x_);
 
 }
-
 

@@ -20,7 +20,7 @@ protected:
     std::vector<int> L; // 不再初始化默认值
     long Vol = 10;
     int NNb = 2;
-    int* x_ = nullptr;
+    std::vector<int> x_;
 
 public:
     void set(int _Dim, std::initializer_list<int> initList);
@@ -32,7 +32,7 @@ public:
     int getOpsDir(int _Dir);
     int getComponent(long _Site, int _Dir);
     long getSite(int *_Component);
-    long getSite(std::vector<int> &_Component);
+    long getSite(const std::vector<int> &_Component);
     int getDir(long _Site, long _NNSite);
     long getNNSite(long _Site, int _Dir);
     long getNNBond(long _Site, int _Dir);

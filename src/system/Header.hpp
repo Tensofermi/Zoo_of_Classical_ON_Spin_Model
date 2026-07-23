@@ -1,6 +1,5 @@
 #pragma once
 #include <bits/stdc++.h>
-#define sprintf_s sprintf
 
 // Some useful tools
 #include "Utils/Utils.hpp"

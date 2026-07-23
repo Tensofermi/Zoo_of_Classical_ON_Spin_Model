@@ -4,7 +4,6 @@
 #include "../Clock/Clock.hpp"
 #include "../IOControl/IOControl.hpp"
 #include "../../config/Parameter_config.hpp"
-#define sprintf_s sprintf
 
 class HistogramBase
 {
